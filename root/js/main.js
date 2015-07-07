@@ -1,26 +1,32 @@
 var Commands = function(hostline) {
-    return { 'poweroff':   { command: "poweroff",
-                             hesitation: 100,
-                             output: "\nBroadcast message from " + hostline + "\n\t\t(/dev/pts/0) at " + new Date().getHours() + ":" + new Date().getMinutes() + "...\n\nThe system is going down for halt NOW!"}
+    return { 'poweroff':   { typedCommand: "poweroff",
+                             startDelay: 1250,
+                             hesitation: 200,
+                             output: "\nBroadcast message from " + hostline + "\n\t\t(/dev/pts/0) at " +
+                                     new Date().getHours() + ":" + new Date().getMinutes() + "...\n\n" +
+                                     "The system is going down for halt NOW!"}
             };
 };
 
 var Scroller = function(target){
-    hostline = "root@" + window.location.hostname;
+    hostline = "root@" + (window.location.hostname || 'localhost');
     prompt = '<b><font color="#6CDA33">' + hostline + '</font><font color="#FFF5E3">:</font><font color="#6F9BC8">~</font><font color="#FFF5E3">$ </font></b>';
 
     commands = new Commands(hostline);
 
-    text_speed = 18;
-    text_start_speed = 800;
-    newline_speed = 400;
+    textSpeed = 18;
+    textStartSpeed = 800;
+    newlineSpeed = 400;
+    promptDelay = 1000;
 
-    text_pos = 0;
+    textPos = 0;
     typed_text = '<b>thsdad</b> asdf asdf dfsa dasdsfagdgad is\nis\na\ntest!\npoweroff';
 
-    cursor_speed = 500;
-    cursor_showing = false;
-    cursor_states = ['_', ' '];
+    commandList = ['poweroff', 'poweroff'];
+
+    cursorSpeed = 500;
+    cursorShowing = false;
+    cursorStates = ['_', ' '];
 
     addTextInstant = function(line) {
         console.log(target);
@@ -41,33 +47,76 @@ var Scroller = function(target){
 
         this.cursorShowing = !this.cursorShowing;
 
-        newText = oldText.substring(0, oldText.length - 1) + this.cursor_states[ this.cursorShowing ? 0 : 1 ];
+        newText = oldText.substring(0, oldText.length - 1) + this.cursorStates[ this.cursorShowing ? 0 : 1 ];
         document.getElementById(target).innerHTML = newText;
         setTimeout(function() {
                         this.updateCursorState(newText);
                    },
-                   this.cursor_speed);
+                   this.cursorSpeed);
     };
 
     appendText = function() {
-        this.addTextInstant(this.typed_text.substring(this.text_pos,this.text_pos + 1));
+        this.addTextInstant(this.typed_text.substring(this.textPos,this.textPos + 1));
 
-        if (this.text_pos <= this.typed_text.length) {
-            this.text_pos++;
-            if (this.typed_text.substring(this.text_pos - 1, this.text_pos) == "\n") {
+        if (this.textPos <= this.typed_text.length) {
+            this.textPos++;
+            if (this.typed_text.substring(this.textPos - 1, this.textPos) == "\n") {
                 setTimeout(function() {
                                 this.addPrompt();
-                                setTimeout(this.appendText, text_start_speed);
+                                setTimeout(this.appendText, textStartSpeed);
                            },
-                           this.newline_speed);
+                           this.newlineSpeed);
             } else {
-                setTimeout(this.appendText, this.text_speed);
+                setTimeout(this.appendText, this.textSpeed);
             }
         } else {
             this.updateCursorState();
         }
     };
 
-    addPrompt();
-    appendText();
+    // New eventing
+
+    typeCommand = function(command, index) {
+        addTextInstant(command.typedCommand + '\n');
+
+        setTimeout(function() {
+                       printCommandOutput(command, index);
+                   },
+                   command.hesitation);
+    };
+
+    printCommandOutput = function(command, index) {
+        addTextInstant(command.output);
+        addTextInstant('\n\n');
+
+        setTimeout(function() {
+                       executeCommands(index + 1);
+                   },
+                   promptDelay);
+    };
+
+    executeCommand = function(index) {
+        commandName = commandList[index];
+        command = commands[commandName];
+        console.log('Command: ' + commandName);
+
+        addPrompt();
+
+        setTimeout(function() {
+                       typeCommand(command, index);
+                   },
+                   command.startDelay);
+    };
+
+    executeCommands = function(index) {
+        if (!index)
+            index = 0;
+
+        if (index >= commandList.length)
+            return;
+
+        executeCommand(index);
+    };
+
+    executeCommands();
 }
