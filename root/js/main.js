@@ -59,7 +59,7 @@ var Commands = function(hostline, user, group) {
 
 var Scroller = function(target){
     hostline = "root@" + (window.location.hostname || 'localhost');
-    bash_prompt = '<b><font color="#6CDA33">' + hostline + '</font><font color="#FFF5E3">:</font><font color="#4444ff">~</font><font color="#FFF5E3">$ </font></b>';
+    bash_prompt = '<b><font color="#ACFA33">' + hostline + '</font><font color="#FFF5E3">:</font><font color="#4444ff">~</font><font color="#FFF5E3">$ </font></b>';
 
     commands = new Commands(hostline, 'sg', 'sg');
 
