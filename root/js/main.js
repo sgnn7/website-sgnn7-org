@@ -7,14 +7,21 @@ var Commands = function(hostline, user, group) {
     dd_device = 'sda'                    // This probably won't gain 'coolness' from changing
     dd_block_size = 4                    // Assumed MB
 
-    var SoftLink = function (user, group, source, target) {
-        return 'lrwxrwxrwx   1 ' + user + '    ' + group + '   35 Mar 29  2013 ' +
+    var formatSpaces = function (name, spaces) {
+        emptyString = '';
+        while (emptyString.length < spaces) emptyString += ' ';
+
+        return (name + emptyString).slice(0, spaces);
+    }
+
+    var softLink = function (user, group, source, target) {
+        return 'lrwxrwxrwx   1 ' + formatSpaces(user, 5) + ' ' + formatSpaces(group, 5) + '    35 Mar 29  2013 ' +
                '<b><font color="#28b0b0">' + source + '</font></b>' +
                ' -> ' +
                '<b><font color=#4444ff><a href=' + target + '>' + target + '</a></font></b>';
     }
 
-    var DDCopyOutput = function (device, size_gb, block_size, duration) {
+    var ddCopyOutput = function (device, size_gb, block_size, duration) {
         records = (size_gb << 10) / block_size;
         variance = Math.random();
         true_duration = duration/1000.0 + variance;
@@ -43,16 +50,16 @@ var Commands = function(hostline, user, group) {
                                startDelay: 1250,
                                hesitation: 200,
                                duration: 100,
-                               output: 'drwx------ 113 ' + user + '    ' + group + '    36864 Jul 24 22:38 .\n' +
-                                       'drwxr-xr-x   6 root root   4096 Jan  6  2015 ..\n' +
-                                       SoftLink(user, group, 'github', 'https://github.com/sgnn7') + '\n' +
-                                       SoftLink(user, group, 'twitter', 'https://twitter.com/sgnn7')
+                               output: 'drwx------ 113 ' + formatSpaces(user, 5) + ' ' + formatSpaces(group, 5) + ' 36864 Jul 24 22:38 .\n' +
+                                       'drwxr-xr-x   6 ' + formatSpaces('root', 5) + ' ' + formatSpaces('root', 5) + '  4096 Jan  6  2015 ..\n' +
+                                       softLink(user, group, 'github', 'https://github.com/sgnn7') + '\n' +
+                                       softLink(user, group, 'twitter', 'https://twitter.com/sgnn7')
                              },
              'dd_partition': { typedCommand: 'dd if=/dev/urandom of=/dev/' + dd_device + ' bs=' + dd_block_size + 'M',
                                startDelay: 1200,
                                hesitation: 200,
                                duration: dd_duration,
-                               output: DDCopyOutput(dd_device, hd_size, dd_block_size, dd_duration)
+                               output: ddCopyOutput(dd_device, hd_size, dd_block_size, dd_duration)
                              },
             };
 };
