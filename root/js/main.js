@@ -1,18 +1,35 @@
-var Commands = function(hostline) {
+// TODO: Move all the styling into CSS classes
+var Commands = function(hostline, user, group) {
+    var FileLink = function (user, group, source, target) {
+        return 'lrwxrwxrwx   1 ' + user + '    ' + group + '   35 Mar 29  2013 ' +
+               '<b><font color="#29b4b4">' + source + '</font></b>' +
+               ' -> ' +
+               '<b><font color=#4444ff><a href=' + target + '>' + target + '</a></font></b>\n';
+    }
+
     return { 'poweroff':   { typedCommand: "poweroff",
                              startDelay: 1250,
                              hesitation: 200,
                              output: "\nBroadcast message from " + hostline + "\n\t\t(/dev/pts/0) at " +
                                      new Date().getHours() + ":" + new Date().getMinutes() + "...\n\n" +
-                                     "The system is going down for halt NOW!"}
+                                     "The system is going down for halt NOW!"
+                           },
+             'ls_home':    { typedCommand: 'ls ~' + user,
+                             startDelay: 1250,
+                             hesitation: 200,
+                             output: 'drwx------ 113 ' + user + '    ' + group + '    36864 Jul 24 22:38 .\n' +
+                                     'drwxr-xr-x   6 root root   4096 Jan  6  2015 ..\n' +
+                                     FileLink(user, group, 'github', 'https://github.com/sgnn7') +
+                                     FileLink(user, group, 'twitter', 'https://twitter.com/sgnn7')
+                           },
             };
 };
 
 var Scroller = function(target){
     hostline = "root@" + (window.location.hostname || 'localhost');
-    prompt = '<b><font color="#6CDA33">' + hostline + '</font><font color="#FFF5E3">:</font><font color="#6F9BC8">~</font><font color="#FFF5E3">$ </font></b>';
+    bash_prompt = '<b><font color="#6CDA33">' + hostline + '</font><font color="#FFF5E3">:</font><font color="#4444ff">~</font><font color="#FFF5E3">$ </font></b>';
 
-    commands = new Commands(hostline);
+    commands = new Commands(hostline, 'sg', 'sg');
 
     textSpeed = 18;
     textStartSpeed = 800;
@@ -22,7 +39,7 @@ var Scroller = function(target){
     textPos = 0;
     typed_text = '<b>thsdad</b> asdf asdf dfsa dasdsfagdgad is\nis\na\ntest!\npoweroff';
 
-    commandList = ['poweroff', 'poweroff'];
+    commandList = ['ls_home', 'poweroff'];
 
     cursorSpeed = 500;
     cursorShowing = false;
@@ -35,7 +52,7 @@ var Scroller = function(target){
     };
 
     addPrompt = function() {
-        addTextInstant(prompt);
+        addTextInstant(bash_prompt);
     };
 
     updateCursorState = function(text) {
@@ -85,6 +102,7 @@ var Scroller = function(target){
                    command.hesitation);
     };
 
+    // Prints the prompt and executes a single command and displays it's output
     printCommandOutput = function(command, index) {
         addTextInstant(command.output);
         addTextInstant('\n\n');
@@ -95,6 +113,7 @@ var Scroller = function(target){
                    promptDelay);
     };
 
+    // Prints the prompt, types the command, and then executes it
     executeCommand = function(index) {
         commandName = commandList[index];
         command = commands[commandName];
@@ -108,6 +127,7 @@ var Scroller = function(target){
                    command.startDelay);
     };
 
+    // Executes one command at a time from the commandList
     executeCommands = function(index) {
         if (!index)
             index = 0;
