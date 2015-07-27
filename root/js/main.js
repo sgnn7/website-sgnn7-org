@@ -46,6 +46,12 @@ var Commands = function(hostline, user, group) {
                                        new Date().getHours() + ":" + new Date().getMinutes() + "...\n\n" +
                                        "The system is going down for halt NOW!"
                              },
+             'get_users':    { typedCommand: 'cat /etc/passwd | grep \'/home/\' | grep \'^[^:]*:x:[0-9]\\{4\\}:\' | awk -F: \'{print $1}\'',
+                               startDelay: 1250,
+                               hesitation: 200,
+                               duration: 100,
+                               output: user
+                             },
              'ls_home':      { typedCommand: 'ls ~' + user,
                                startDelay: 1250,
                                hesitation: 200,
@@ -78,7 +84,7 @@ var Scroller = function(target){
     textPos = 0;
     typed_text = '<b>thsdad</b> asdf asdf dfsa dasdsfagdgad is\nis\na\ntest!\npoweroff';
 
-    commandList = ['ls_home', 'dd_partition', 'poweroff'];
+    commandList = ['get_users', 'ls_home', 'dd_partition', 'poweroff'];
 
     cursorSpeed = 500;
     cursorShowing = false;
