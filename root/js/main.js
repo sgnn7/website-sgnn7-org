@@ -1,27 +1,59 @@
 // TODO: Move all the styling into CSS classes
 var Commands = function(hostline, user, group) {
-    var FileLink = function (user, group, source, target) {
+    // Various dd parameters
+    exponent = Math.floor((Math.random() * 4));
+    hd_size = 64 << exponent;            // Random but within the specified range
+    dd_duration = (hd_size >> 6) * 500;  // Make the base length stable
+    dd_device = 'sda'                    // This probably won't gain 'coolness' from changing
+    dd_block_size = 4                    // Assumed MB
+
+    var SoftLink = function (user, group, source, target) {
         return 'lrwxrwxrwx   1 ' + user + '    ' + group + '   35 Mar 29  2013 ' +
-               '<b><font color="#29b4b4">' + source + '</font></b>' +
+               '<b><font color="#28b0b0">' + source + '</font></b>' +
                ' -> ' +
-               '<b><font color=#4444ff><a href=' + target + '>' + target + '</a></font></b>\n';
+               '<b><font color=#4444ff><a href=' + target + '>' + target + '</a></font></b>';
     }
 
-    return { 'poweroff':   { typedCommand: "poweroff",
-                             startDelay: 1250,
-                             hesitation: 200,
-                             output: "\nBroadcast message from " + hostline + "\n\t\t(/dev/pts/0) at " +
-                                     new Date().getHours() + ":" + new Date().getMinutes() + "...\n\n" +
-                                     "The system is going down for halt NOW!"
-                           },
-             'ls_home':    { typedCommand: 'ls ~' + user,
-                             startDelay: 1250,
-                             hesitation: 200,
-                             output: 'drwx------ 113 ' + user + '    ' + group + '    36864 Jul 24 22:38 .\n' +
-                                     'drwxr-xr-x   6 root root   4096 Jan  6  2015 ..\n' +
-                                     FileLink(user, group, 'github', 'https://github.com/sgnn7') +
-                                     FileLink(user, group, 'twitter', 'https://twitter.com/sgnn7')
-                           },
+    var DDCopyOutput = function (device, size_gb, block_size, duration) {
+        records = (size_gb << 10) / block_size;
+        variance = Math.random();
+        true_duration = duration/1000.0 + variance;
+        throughput = size_gb / true_duration;
+
+        // This is stupid but JS seems to roll over at a certain point for ints 2^32 < x < 2^64
+        // so we do this digit-trim hack to display it correctly
+        bytes_copied = (size_gb << 20) / 1000;
+        bytes_copied <<= 10;
+
+        return records + '+0 records in\n' +
+               records + '+0 records out\n' +
+               bytes_copied + '000 bytes (' + size_gb + ' GB) copied, ' +
+                 true_duration.toFixed(5) + ' s, ' + throughput.toFixed(1) + ' GB/s';
+    }
+
+    return { 'poweroff':     { typedCommand: "poweroff",
+                               startDelay: 1250,
+                               hesitation: 200,
+                               duration: 0,
+                               output: "\nBroadcast message from " + hostline + "\n\t\t(/dev/pts/0) at " +
+                                       new Date().getHours() + ":" + new Date().getMinutes() + "...\n\n" +
+                                       "The system is going down for halt NOW!"
+                             },
+             'ls_home':      { typedCommand: 'ls ~' + user,
+                               startDelay: 1250,
+                               hesitation: 200,
+                               duration: 100,
+                               output: 'drwx------ 113 ' + user + '    ' + group + '    36864 Jul 24 22:38 .\n' +
+                                       'drwxr-xr-x   6 root root   4096 Jan  6  2015 ..\n' +
+                                       SoftLink(user, group, 'github', 'https://github.com/sgnn7') + '\n' +
+                                       SoftLink(user, group, 'twitter', 'https://twitter.com/sgnn7')
+                             },
+             'dd_partition': { typedCommand: 'dd if=/dev/urandom of=/dev/' + dd_device + ' bs=' + dd_block_size + 'M',
+                               startDelay: 1200,
+                               hesitation: 200,
+                               duration: dd_duration,
+                               output: DDCopyOutput(dd_device, hd_size, dd_block_size, dd_duration)
+                             },
             };
 };
 
@@ -39,7 +71,7 @@ var Scroller = function(target){
     textPos = 0;
     typed_text = '<b>thsdad</b> asdf asdf dfsa dasdsfagdgad is\nis\na\ntest!\npoweroff';
 
-    commandList = ['ls_home', 'poweroff'];
+    commandList = ['ls_home', 'dd_partition', 'poweroff'];
 
     cursorSpeed = 500;
     cursorShowing = false;
