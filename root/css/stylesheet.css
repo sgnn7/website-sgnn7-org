@@ -11,9 +11,10 @@
 }
 
 @font-face {
-  font-family: "Courier New", Courier, monospace
+  font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
   font-weight: normal;
 }
+
 
 a:link {
   text-decoration: none;
@@ -32,7 +33,7 @@ a:active {
 }
 
 #textarea {
-  font-family: Ubuntu, monospace;
+  font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
   font-size: 1em;
   background-color: rgba(0,0,0, 0.3);
   width: 100%;
