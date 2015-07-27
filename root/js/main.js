@@ -63,7 +63,7 @@ var Commands = function(hostline, user, group) {
                              },
              'dd_partition': { typedCommand: 'dd if=/dev/urandom of=/dev/' + dd_device + ' bs=' + dd_block_size + 'M',
                                startDelay: 1200,
-                               hesitation: 200,
+                               hesitation: 3000,
                                duration: dd_duration,
                                output: ddCopyOutput(dd_device, hd_size, dd_block_size, dd_duration)
                              },
