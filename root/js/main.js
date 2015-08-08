@@ -68,7 +68,7 @@ var Commands = function(hostline, user, group) {
                                        'drwxr-xr-x   6 ' + formatSpaces('root', 5) + ' ' + formatSpaces('root', 5) + '  4096 Jan  6  2015 ..\n' +
                                        softLink(user, group, 'github', 'https://github.com/sgnn7') + '\n' +
                                        softLink(user, group, 'twitter', 'https://twitter.com/sgnn7') + '\n' +
-                                       softLink(user, group, 'e-mail', 'mailto:sgnn7@sgnn7.org')
+                                       softLink(user, group, 'linkedin', 'https://linkedin.com/in/sgnn7')
                              },
              'dd_partition': { typedCommand: 'dd if=/dev/urandom of=/dev/' + dd_device + ' bs=' + dd_block_size + 'M',
                                startDelay: 1200,
