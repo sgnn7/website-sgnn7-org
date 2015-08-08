@@ -15,6 +15,21 @@
   font-weight: normal;
 }
 
+a {
+  font-weight: bold;
+  color: #597fd6;
+}
+
+a:link,
+a:visited {
+  text-decoration: none;
+}
+
+a:hover,
+a:active {
+  text-decoration: underline;
+}
+
 .footer {
   position: absolute;
 
@@ -23,23 +38,8 @@
   padding: 1em;
 }
 
-a:link {
-  text-decoration: none;
-  color: #5781b0;
-}
-
-a:visited {
-  text-decoration: none;
-  color: #5781b0;
-}
-
-a:hover {
-  text-decoration: underline;
-  color: #5781b0;
-}
-
-a:active {
-  text-decoration: underline;
+.footer a {
+  font-weight: normal !important;
 }
 
 #textarea {

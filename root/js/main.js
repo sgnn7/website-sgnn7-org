@@ -23,9 +23,9 @@ var Commands = function(hostline, user, group) {
 
     var softLink = function (user, group, source, target) {
         return 'lrwxrwxrwx   1 ' + formatSpaces(user, 5) + ' ' + formatSpaces(group, 5) + '    35 Mar 29  2013 ' +
-               '<b><font color="#28b0b0">' + source + '</font></b>' +
+               '<b><font color="#32c9e3">' + source + '</font></b>' +
                ' -> ' +
-               '<b><font color=#4444ff><a href=' + target + '>' + target + '</a></font></b>';
+               '<b><font color=#597fd6><a href=' + target + '>' + target + '</a></font></b>';
     }
 
     var ddCopyOutput = function (device, size_gb, block_size, duration) {
@@ -81,7 +81,7 @@ var Commands = function(hostline, user, group) {
 
 var Scroller = function(target){
     hostline = "root@" + (window.location.hostname || 'localhost');
-    bash_prompt = '<b><font color="#ACFA33">' + hostline + '</font><font color="#FFF5E3">:</font><font color="#4444ff">~</font><font color="#FFF5E3">$ </font></b>';
+    bash_prompt = '<b><font color="#ACFA33">' + hostline + '</font><font color="#FFF5E3">:</font><font color="#597fd6">~</font><font color="#FFF5E3"># </font></b>';
 
     commands = new Commands(hostline, 'sg', 'sg');
 
