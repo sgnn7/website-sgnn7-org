@@ -52,7 +52,7 @@ var Commands = function(hostline, user, group) {
                                duration: 100,
                                output: user
                              },
-             'ls_home':      { typedCommand: 'ls ~' + user,
+             'ls_home':      { typedCommand: 'ls -la ~' + user,
                                startDelay: 1250,
                                hesitation: 200,
                                duration: 100,
