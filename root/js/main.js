@@ -14,6 +14,13 @@ var Commands = function(hostline, user, group) {
         return (name + emptyString).slice(0, spaces);
     }
 
+    var padNumber = function (value, spaces) {
+        emptyString = '';
+        while (emptyString.length < spaces) emptyString += '0';
+
+        return (emptyString + value).slice(('' + value).length);
+    }
+
     var softLink = function (user, group, source, target) {
         return 'lrwxrwxrwx   1 ' + formatSpaces(user, 5) + ' ' + formatSpaces(group, 5) + '    35 Mar 29  2013 ' +
                '<b><font color="#28b0b0">' + source + '</font></b>' +
@@ -43,7 +50,8 @@ var Commands = function(hostline, user, group) {
                                hesitation: 200,
                                duration: 0,
                                output: "\nBroadcast message from " + hostline + "\n\t\t(/dev/pts/0) at " +
-                                       new Date().getHours() + ":" + new Date().getMinutes() + "...\n\n" +
+                                       padNumber(new Date().getHours(), 2) + ":" +
+                                       padNumber(new Date().getMinutes(), 2) + "...\n\n" +
                                        "The system is going down for halt NOW!"
                              },
              'get_users':    { typedCommand: 'cat /etc/passwd | grep \'/home/\' | grep \'^[^:]*:x:[0-9]\\{4\\}:\' | awk -F: \'{print $1}\'',
