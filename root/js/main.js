@@ -76,7 +76,8 @@ var Scroller = function(target){
 
     commands = new Commands(hostline, 'sg', 'sg');
 
-    textSpeed = 18;
+    textSpeed = 19;
+    textSpeedJitter = 12;
     textStartSpeed = 800;
     newlineSpeed = 400;
     promptDelay = 1000;
@@ -90,10 +91,16 @@ var Scroller = function(target){
     cursorShowing = false;
     cursorStates = ['_', ' '];
 
-    addTextInstant = function(line) {
-        console.log(target);
-        var oldText = document.getElementById(target).innerHTML || ""
-        document.getElementById(target).innerHTML = oldText + line;
+    addTextInstant = function(text) {
+        // console.log(target);
+
+        var oldText = document.getElementById(target).innerHTML || "";
+        document.getElementById(target).innerHTML = oldText + text;
+    };
+
+    removeCursor = function() {
+        var oldText = document.getElementById(target).innerHTML || "";
+        document.getElementById(target).innerHTML = oldText.substring(0, oldText.length - 1);
     };
 
     addPrompt = function() {
@@ -117,70 +124,79 @@ var Scroller = function(target){
                    this.cursorSpeed);
     };
 
-    appendText = function() {
-        this.addTextInstant(this.typed_text.substring(this.textPos,this.textPos + 1));
+    addTextTyped = function(typedText, commandIndex, originalText, textIndex) {
+        // Could have assumed ECMA6 and done default params but this is more compatible
+        if (!originalText)
+            originalText = document.getElementById(target).innerHTML || "";
 
-        if (this.textPos <= this.typed_text.length) {
-            this.textPos++;
-            if (this.typed_text.substring(this.textPos - 1, this.textPos) == "\n") {
+        if (!textIndex)
+            textIndex = 0;
+
+        this.addTextInstant(typedText.substring(textIndex, textIndex + 1));
+
+        if (textIndex <= typedText.length) {
+            textIndex++;
+            if (typedText.substring(textIndex - 1, textIndex) == '\n') {
+                this.addTextInstant('_');
                 setTimeout(function() {
-                                this.addPrompt();
-                                setTimeout(this.appendText, textStartSpeed);
+                               printCommandOutput(command, commandIndex);
                            },
-                           this.newlineSpeed);
+                           command.hesitation);
             } else {
-                setTimeout(this.appendText, this.textSpeed);
+                randomJitter = this.textSpeedJitter * Math.random();
+                jitteredTextSpeed = this.textSpeed + (randomJitter / 2);
+
+                // console.log("Jitter:", jitteredTextSpeed);
+
+                setTimeout(function() {
+                               this.addTextTyped(typedText, commandIndex, originalText, textIndex);
+                           },
+                           jitteredTextSpeed);
             }
-        } else {
-            this.updateCursorState();
         }
     };
 
     // New eventing
 
     typeCommand = function(command, index) {
-        addTextInstant(command.typedCommand + '\n');
-
-        setTimeout(function() {
-                       printCommandOutput(command, index);
-                   },
-                   command.hesitation);
+        addTextTyped(command.typedCommand + '\n', index);
     };
 
     // Prints the prompt and executes a single command and displays it's output
-    printCommandOutput = function(command, index) {
+    printCommandOutput = function(command, commandIndex) {
+        removeCursor();
         addTextInstant(command.output);
         addTextInstant('\n\n');
 
         setTimeout(function() {
-                       executeCommands(index + 1);
+                       executeCommands(commandIndex + 1);
                    },
                    promptDelay);
     };
 
     // Prints the prompt, types the command, and then executes it
-    executeCommand = function(index) {
-        commandName = commandList[index];
+    executeCommand = function(commandIndex) {
+        commandName = commandList[commandIndex];
         command = commands[commandName];
         console.log('Command: ' + commandName);
 
         addPrompt();
 
         setTimeout(function() {
-                       typeCommand(command, index);
+                       typeCommand(command, commandIndex);
                    },
                    command.startDelay);
     };
 
     // Executes one command at a time from the commandList
-    executeCommands = function(index) {
-        if (!index)
-            index = 0;
+    executeCommands = function(commandIndex) {
+        if (!commandIndex)
+            commandIndex = 0;
 
-        if (index >= commandList.length)
+        if (commandIndex >= commandList.length)
             return;
 
-        executeCommand(index);
+        executeCommand(commandIndex);
     };
 
     executeCommands();
