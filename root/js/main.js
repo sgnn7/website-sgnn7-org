@@ -23,7 +23,7 @@ var Commands = function(hostline, user, group) {
 
     var softLink = function (user, group, source, target) {
         return 'lrwxrwxrwx   1 ' + formatSpaces(user, 5) + ' ' + formatSpaces(group, 5) + '    35 Mar 29  2013 ' +
-               '<p class="softlink">' + source + '</p>' +
+               '<span class="softlink">' + source + '</span>' +
                ' -> ' +
                '<a class="softlink-target" href=' + target + '>' + target + '</a>';
     }
@@ -81,10 +81,10 @@ var Commands = function(hostline, user, group) {
 
 var Scroller = function(target){
     hostline = "root@" + (window.location.hostname || 'localhost');
-    bash_prompt = '<p class="prompt-hostline">' + hostline + '</p>' +
-                  '<p style="prompt-normal">:</p>' +
-                  '<p class="prompt-path">~</p>' +
-                  '<p class="prompt-normal"># </p>';
+    bash_prompt = '<span class="prompt-hostline">' + hostline + '</span>' +
+                  '<span style="prompt-normal">:</span>' +
+                  '<span class="prompt-path">~</span>' +
+                  '<span class="prompt-normal"># </span>';
 
     commands = new Commands(hostline, 'sg', 'sg');
 
@@ -102,20 +102,20 @@ var Scroller = function(target){
     cursorShowing = false;
     cursorStates = ['_', ' '];
 
-    addTextInstant = function(text) {
+    addTextInstant = function(targetElement, text) {
         // console.log(target);
 
-        var oldText = document.getElementById(target).innerHTML || "";
-        document.getElementById(target).innerHTML = oldText + text;
+        var oldText = targetElement.innerHTML;
+        targetElement.innerHTML = oldText + text;
     };
 
-    removeCursor = function() {
-        var oldText = document.getElementById(target).innerHTML || "";
-        document.getElementById(target).innerHTML = oldText.substring(0, oldText.length - 1);
+    removeCursor = function(targetElement) {
+        var oldText = targetElement.innerHTML;
+        targetElement.innerHTML = oldText.substring(0, oldText.length - 1);
     };
 
-    addPrompt = function() {
-        addTextInstant(bash_prompt);
+    addPrompt = function(targetElement) {
+        addTextInstant(targetElement, bash_prompt);
     };
 
     updateCursorState = function(text) {
@@ -135,7 +135,7 @@ var Scroller = function(target){
                    this.cursorSpeed);
     };
 
-    addTypedText = function(typedText, commandIndex, originalText, textIndex) {
+    addTypedText = function(targetElement, typedText, commandIndex, originalText, textIndex) {
         // Could have assumed ECMA6 and done default params but this is more compatible
         if (!originalText)
             originalText = document.getElementById(target).innerHTML || "";
@@ -143,14 +143,14 @@ var Scroller = function(target){
         if (!textIndex)
             textIndex = 0;
 
-        this.addTextInstant(typedText.substring(textIndex, textIndex + 1));
+        this.addTextInstant(targetElement, typedText.substring(textIndex, textIndex + 1));
 
         if (textIndex <= typedText.length) {
             textIndex++;
             if (typedText.substring(textIndex - 1, textIndex) == '\n') {
                 this.addTextInstant('_');
                 setTimeout(function() {
-                               printCommandOutput(command, commandIndex);
+                               printCommandOutput(targetElement, command, commandIndex);
                            },
                            command.hesitation);
             } else {
@@ -160,52 +160,58 @@ var Scroller = function(target){
                 // console.log("Jitter:", jitteredTextSpeed);
 
                 setTimeout(function() {
-                               this.addTypedText(typedText, commandIndex, originalText, textIndex);
+                               this.addTypedText(targetElement, typedText, commandIndex, originalText, textIndex);
                            },
                            jitteredTextSpeed);
             }
         }
     };
 
-    typeCommand = function(command, index) {
-        addTypedText(command.typedCommand + '\n', index);
+    typeCommand = function(targetElement, command, index) {
+        addTypedText(targetElement, command.typedCommand + '\n', index);
     };
 
     // Prints the prompt and executes a single command and displays it's output
-    printCommandOutput = function(command, commandIndex) {
-        removeCursor();
-        addTextInstant(command.output);
-        addTextInstant('\n\n');
+    printCommandOutput = function(targetElement, command, commandIndex) {
+        removeCursor(targetElement);
+        addTextInstant(targetElement, '\n');
+        addTextInstant(targetElement, command.output);
+        addTextInstant(targetElement, '\n\n');
 
         setTimeout(function() {
-                       executeCommands(commandIndex + 1);
+                       executeCommands(targetElement, commandIndex + 1);
                    },
                    promptDelay);
     };
 
     // Prints the prompt, types the command, and then executes it
-    executeCommand = function(commandIndex) {
+    executeCommand = function(targetElement, commandIndex) {
         commandName = commandList[commandIndex];
         command = commands[commandName];
         console.log('Command: ' + commandName);
 
-        addPrompt();
+        addPrompt(targetElement);
 
         setTimeout(function() {
-                       typeCommand(command, commandIndex);
+                       typeCommand(targetElement, command, commandIndex);
                    },
                    command.startDelay);
     };
 
     // Executes one command at a time from the commandList
-    executeCommands = function(commandIndex) {
+    executeCommands = function(targetElement, commandIndex) {
         if (!commandIndex)
             commandIndex = 0;
 
         if (commandIndex >= commandList.length)
             return;
 
-        executeCommand(commandIndex);
+        var targetElement = document.createElement('p');
+        targetElement.id = 'command_' + commandIndex;
+
+        document.getElementById(target).appendChild(targetElement);
+
+        executeCommand(targetElement, commandIndex);
     };
 
     executeCommands();
