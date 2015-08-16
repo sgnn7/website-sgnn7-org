@@ -30,6 +30,10 @@ a:active {
   text-decoration: underline;
 }
 
+p {
+  display: inline;
+}
+
 .footer {
   position: absolute;
 
@@ -50,4 +54,29 @@ a:active {
   height: 100%;
   white-space: pre;
   margin: 0;
+}
+
+.softlink {
+  color: #32c9e3;
+  font-weight: bold !important;
+}
+
+.softlink-target {
+  color: #597fd6;
+  font-weight: bold !important;
+}
+
+.prompt-hostline {
+  color: #ACFA33;
+  font-weight: bold !important;
+}
+
+.prompt-normal {
+  color: #FFF5E3;
+  font-weight: bold !important;
+}
+
+.prompt-path {
+  color: #597fd6;
+  font-weight: bold !important;
 }

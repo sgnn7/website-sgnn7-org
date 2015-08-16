@@ -23,9 +23,9 @@ var Commands = function(hostline, user, group) {
 
     var softLink = function (user, group, source, target) {
         return 'lrwxrwxrwx   1 ' + formatSpaces(user, 5) + ' ' + formatSpaces(group, 5) + '    35 Mar 29  2013 ' +
-               '<b><font color="#32c9e3">' + source + '</font></b>' +
+               '<p class="softlink">' + source + '</p>' +
                ' -> ' +
-               '<b><font color=#597fd6><a href=' + target + '>' + target + '</a></font></b>';
+               '<a class="softlink-target" href=' + target + '>' + target + '</a>';
     }
 
     var ddCopyOutput = function (device, size_gb, block_size, duration) {
@@ -81,7 +81,7 @@ var Commands = function(hostline, user, group) {
 
 var Scroller = function(target){
     hostline = "root@" + (window.location.hostname || 'localhost');
-    bash_prompt = '<b><font color="#ACFA33">' + hostline + '</font><font color="#FFF5E3">:</font><font color="#597fd6">~</font><font color="#FFF5E3"># </font></b>';
+    bash_prompt = '<p class="prompt-hostline">' + hostline + '</p><p style="prompt-normal">:</p><p class="prompt-path">~</p><p class="prompt-normal"># </p>';
 
     commands = new Commands(hostline, 'sg', 'sg');
 
@@ -92,7 +92,6 @@ var Scroller = function(target){
     promptDelay = 1000;
 
     textPos = 0;
-    typed_text = '<b>thsdad</b> asdf asdf dfsa dasdsfagdgad is\nis\na\ntest!\npoweroff';
 
     commandList = ['get_users', 'ls_home', 'dd_partition', 'poweroff'];
 
@@ -133,7 +132,7 @@ var Scroller = function(target){
                    this.cursorSpeed);
     };
 
-    addTextTyped = function(typedText, commandIndex, originalText, textIndex) {
+    addTypedText = function(typedText, commandIndex, originalText, textIndex) {
         // Could have assumed ECMA6 and done default params but this is more compatible
         if (!originalText)
             originalText = document.getElementById(target).innerHTML || "";
@@ -158,17 +157,15 @@ var Scroller = function(target){
                 // console.log("Jitter:", jitteredTextSpeed);
 
                 setTimeout(function() {
-                               this.addTextTyped(typedText, commandIndex, originalText, textIndex);
+                               this.addTypedText(typedText, commandIndex, originalText, textIndex);
                            },
                            jitteredTextSpeed);
             }
         }
     };
 
-    // New eventing
-
     typeCommand = function(command, index) {
-        addTextTyped(command.typedCommand + '\n', index);
+        addTypedText(command.typedCommand + '\n', index);
     };
 
     // Prints the prompt and executes a single command and displays it's output
