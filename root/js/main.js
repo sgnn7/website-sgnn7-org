@@ -1,18 +1,28 @@
 // Helper class
 utils = { 'spanText':     function(clazz, text) {
-                              return '<span class="' + clazz + '">' + text + '</span>';
+                              output = '';
+
+                              for (index = 0; index < arguments.length; index += 2) {
+                                  output += '<span class="' + arguments[index] + '">' + arguments[index + 1] + '</span>';
+                              }
+
+                              return output
                           },
 
           'formatSpaces': function (name, spaces) {
                               var emptyString = '';
-                              while (emptyString.length < spaces) emptyString += ' ';
+
+                              while (emptyString.length < spaces)
+                                  emptyString += ' ';
 
                               return (name + emptyString).slice(0, spaces);
                           },
 
           'padNumber':    function (value, spaces) {
                               var emptyString = '';
-                              while (emptyString.length < spaces) emptyString += '0';
+
+                              while (emptyString.length < spaces)
+                                  emptyString += '0';
 
                               return (emptyString + value).slice(('' + value).length);
                            }
@@ -87,10 +97,10 @@ var Commands = function(hostline, user, group) {
 
 var Scroller = function(target){
     hostline = "root@" + (window.location.hostname || 'localhost');
-    bash_prompt = utils.spanText('prompt-hostline', hostline) +
-                  utils.spanText('prompt-normal', ":") +
-                  utils.spanText('prompt-path', "~") +
-                  utils.spanText('prompt-normal', "# ");
+    bash_prompt = utils.spanText('prompt-hostline', hostline,
+                                 'prompt-normal', ":",
+                                 'prompt-path', "~",
+                                 'prompt-normal', "# ");
 
     commands = new Commands(hostline, 'sg', 'sg');
 
