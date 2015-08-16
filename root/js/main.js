@@ -174,9 +174,12 @@ var Scroller = function(target){
     // Prints the prompt and executes a single command and displays it's output
     printCommandOutput = function(targetElement, command, commandIndex) {
         removeCursor(targetElement);
-        addTextInstant(targetElement, '\n');
-        addTextInstant(targetElement, command.output);
-        addTextInstant(targetElement, '\n\n');
+
+        var outputElement = document.createElement('p');
+        outputElement.className += "command-output";
+
+        targetElement.appendChild(outputElement);
+        addTextInstant(outputElement, command.output);
 
         setTimeout(function() {
                        executeCommands(targetElement, commandIndex + 1);

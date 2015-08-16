@@ -76,3 +76,7 @@ a:active {
   color: #597fd6;
   font-weight: bold !important;
 }
+
+.command-output {
+  margin: 0;
+}
