@@ -1,3 +1,24 @@
+// Helper class
+utils = { 'spanText':     function(clazz, text) {
+                              return '<span class="' + clazz + '">' + text + '</span>';
+                          },
+
+          'formatSpaces': function (name, spaces) {
+                              var emptyString = '';
+                              while (emptyString.length < spaces) emptyString += ' ';
+
+                              return (name + emptyString).slice(0, spaces);
+                          },
+
+          'padNumber':    function (value, spaces) {
+                              var emptyString = '';
+                              while (emptyString.length < spaces) emptyString += '0';
+
+                              return (emptyString + value).slice(('' + value).length);
+                           }
+}
+
+
 var Commands = function(hostline, user, group) {
     // Various dd parameters
     exponent = Math.floor((Math.random() * 4));
@@ -6,36 +27,22 @@ var Commands = function(hostline, user, group) {
     dd_device = 'sda'                    // This probably won't gain 'coolness' from changing
     dd_block_size = 4                    // Assumed MB
 
-    var formatSpaces = function (name, spaces) {
-        emptyString = '';
-        while (emptyString.length < spaces) emptyString += ' ';
-
-        return (name + emptyString).slice(0, spaces);
-    }
-
-    var padNumber = function (value, spaces) {
-        emptyString = '';
-        while (emptyString.length < spaces) emptyString += '0';
-
-        return (emptyString + value).slice(('' + value).length);
-    }
-
     var softLink = function (user, group, source, target) {
-        return 'lrwxrwxrwx   1 ' + formatSpaces(user, 5) + ' ' + formatSpaces(group, 5) + '    35 Mar 29  2013 ' +
-               '<span class="softlink">' + source + '</span>' +
+        return 'lrwxrwxrwx   1 ' + utils.formatSpaces(user, 5) + ' ' + utils.formatSpaces(group, 5) + '    35 Mar 29  2013 ' +
+               utils.spanText('softlink', source) +
                ' -> ' +
                '<a class="softlink-target" href=' + target + '>' + target + '</a>';
     }
 
     var ddCopyOutput = function (device, size_gb, block_size, duration) {
-        records = (size_gb << 10) / block_size;
-        variance = Math.random();
-        true_duration = duration/1000.0 + variance;
-        throughput = size_gb / true_duration;
+        var records = (size_gb << 10) / block_size;
+        var variance = Math.random();
+        var true_duration = duration/1000.0 + variance;
+        var throughput = size_gb / true_duration;
 
         // This is stupid but JS seems to roll over at a certain point for ints 2^32 < x < 2^64
         // so we do this digit-trim hack to display it correctly
-        bytes_copied = (size_gb << 20) / 1000;
+        var bytes_copied = (size_gb << 20) / 1000;
         bytes_copied <<= 10;
 
         return records + '+0 records in\n' +
@@ -49,8 +56,8 @@ var Commands = function(hostline, user, group) {
                                hesitation: 200,
                                duration: 0,
                                output: "\nBroadcast message from " + hostline + "\n\t\t(/dev/pts/0) at " +
-                                       padNumber(new Date().getHours(), 2) + ":" +
-                                       padNumber(new Date().getMinutes(), 2) + "...\n\n" +
+                                       utils.padNumber(new Date().getHours(), 2) + ":" +
+                                       utils.padNumber(new Date().getMinutes(), 2) + "...\n\n" +
                                        "The system is going down for halt NOW!"
                              },
              'get_users':    { typedCommand: 'cat /etc/passwd | grep \'/home/\' | grep \'^[^:]*:x:[0-9]\\{4\\}:\' | awk -F: \'{print $1}\'',
@@ -63,8 +70,8 @@ var Commands = function(hostline, user, group) {
                                startDelay: 1250,
                                hesitation: 200,
                                duration: 100,
-                               output: 'drwx------ 113 ' + formatSpaces(user, 5) + ' ' + formatSpaces(group, 5) + ' 36864 Jul 24 22:38 .\n' +
-                                       'drwxr-xr-x   6 ' + formatSpaces('root', 5) + ' ' + formatSpaces('root', 5) + '  4096 Jan  6  2015 ..\n' +
+                               output: 'drwx------ 113 ' + utils.formatSpaces(user, 5) + ' ' + utils.formatSpaces(group, 5) + ' 36864 Jul 24 22:38 .\n' +
+                                       'drwxr-xr-x   6 ' + utils.formatSpaces('root', 5) + ' ' + utils.formatSpaces('root', 5) + '  4096 Jan  6  2015 ..\n' +
                                        softLink(user, group, 'github', 'https://github.com/sgnn7') + '\n' +
                                        softLink(user, group, 'twitter', 'https://twitter.com/sgnn7') + '\n' +
                                        softLink(user, group, 'linkedin', 'https://linkedin.com/in/sgnn7')
@@ -80,10 +87,10 @@ var Commands = function(hostline, user, group) {
 
 var Scroller = function(target){
     hostline = "root@" + (window.location.hostname || 'localhost');
-    bash_prompt = '<span class="prompt-hostline">' + hostline + '</span>' +
-                  '<span style="prompt-normal">:</span>' +
-                  '<span class="prompt-path">~</span>' +
-                  '<span class="prompt-normal"># </span>';
+    bash_prompt = utils.spanText('prompt-hostline', hostline) +
+                  utils.spanText('prompt-normal', ":") +
+                  utils.spanText('prompt-path', "~") +
+                  utils.spanText('prompt-normal', "# ");
 
     commands = new Commands(hostline, 'sg', 'sg');
 
