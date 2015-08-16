@@ -1,4 +1,3 @@
-// TODO: Move all the styling into CSS classes
 var Commands = function(hostline, user, group) {
     // Various dd parameters
     exponent = Math.floor((Math.random() * 4));
@@ -118,6 +117,7 @@ var Scroller = function(target){
         addTextInstant(targetElement, bash_prompt);
     };
 
+    // TODO: Do something with this (if anything)
     updateCursorState = function(text) {
         var oldText = document.getElementById(target).innerHTML || "";
 
@@ -138,7 +138,7 @@ var Scroller = function(target){
     addTypedText = function(targetElement, typedText, commandIndex, originalText, textIndex) {
         // Could have assumed ECMA6 and done default params but this is more compatible
         if (!originalText)
-            originalText = document.getElementById(target).innerHTML || "";
+            originalText = targetElement.innerHTML;
 
         if (!textIndex)
             textIndex = 0;
