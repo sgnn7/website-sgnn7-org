@@ -81,7 +81,10 @@ var Commands = function(hostline, user, group) {
 
 var Scroller = function(target){
     hostline = "root@" + (window.location.hostname || 'localhost');
-    bash_prompt = '<p class="prompt-hostline">' + hostline + '</p><p style="prompt-normal">:</p><p class="prompt-path">~</p><p class="prompt-normal"># </p>';
+    bash_prompt = '<p class="prompt-hostline">' + hostline + '</p>' +
+                  '<p style="prompt-normal">:</p>' +
+                  '<p class="prompt-path">~</p>' +
+                  '<p class="prompt-normal"># </p>';
 
     commands = new Commands(hostline, 'sg', 'sg');
 
