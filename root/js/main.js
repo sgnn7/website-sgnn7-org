@@ -152,7 +152,7 @@ var Scroller = function(target){
                    this.cursorSpeed);
     };
 
-    addTypedText = function(targetElement, typedText, commandIndex, originalText, textIndex) {
+    addTypedText = function(targetElement, typedText, commandIndex, typingAudio, originalText, textIndex) {
         // Could have assumed ECMA6 and done default params but this is more compatible
         if (!originalText)
             originalText = targetElement.innerHTML;
@@ -165,6 +165,7 @@ var Scroller = function(target){
         if (textIndex <= typedText.length) {
             textIndex++;
             if (typedText.substring(textIndex - 1, textIndex) == '\n') {
+                typingAudio.pause();
                 this.addTextInstant('_');
                 setTimeout(function() {
                                printCommandOutput(targetElement, command, commandIndex);
@@ -177,7 +178,7 @@ var Scroller = function(target){
                 // console.log("Jitter:", jitteredTextSpeed);
 
                 setTimeout(function() {
-                               this.addTypedText(targetElement, typedText, commandIndex, originalText, textIndex);
+                               this.addTypedText(targetElement, typedText, commandIndex, typingAudio, originalText, textIndex);
                            },
                            jitteredTextSpeed);
             }
@@ -185,7 +186,10 @@ var Scroller = function(target){
     };
 
     typeCommand = function(targetElement, command, index) {
-        addTypedText(targetElement, command.typedCommand + '\n', index);
+        typingAudio = new Audio('sounds/typing.mp3')
+        typingAudio.loop = true;
+        typingAudio.play();
+        addTypedText(targetElement, command.typedCommand + '\n', index, typingAudio);
     };
 
     // Prints the prompt and executes a single command and displays it's output
