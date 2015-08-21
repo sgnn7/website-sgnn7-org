@@ -70,7 +70,7 @@ var Commands = function(hostline, user, group) {
                                        utils.padNumber(new Date().getMinutes(), 2) + "...\n\n" +
                                        "The system is going down for halt NOW!"
                              },
-             'get_users':    { typedCommand: 'cat /etc/passwd | grep \'/home/\' | grep \'^[^:]*:x:[0-9]\\{4\\}:\' | awk -F: \'{print $1}\'',
+             'get_users':    { typedCommand: 'cat /etc/passwd | grep \'/home/\' | grep \'^[^:]*:x:[0-9]\\{4\\}:\' | \\\n> awk -F: \'{print $1}\'',
                                startDelay: 1250,
                                hesitation: 200,
                                duration: 100,
@@ -168,7 +168,7 @@ var Scroller = function(target){
 
         if (textIndex <= typedText.length) {
             textIndex++;
-            if (typedText.substring(textIndex - 1, textIndex) == '\n') {
+            if (textIndex == typedText.length) {
                 typingAudio.pause();
                 this.addTextInstant('_');
                 setTimeout(function() {
