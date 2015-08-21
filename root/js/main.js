@@ -112,6 +112,10 @@ var Scroller = function(target){
 
     textPos = 0;
 
+    typingAudio = new Audio('sounds/typing.mp3')
+    typingAudio.loop = true;
+    typingAudio.preload = true;
+
     commandList = ['get_users', 'ls_home', 'dd_partition', 'poweroff'];
 
     cursorSpeed = 500;
@@ -186,8 +190,6 @@ var Scroller = function(target){
     };
 
     typeCommand = function(targetElement, command, index) {
-        typingAudio = new Audio('sounds/typing.mp3')
-        typingAudio.loop = true;
         typingAudio.play();
         addTypedText(targetElement, command.typedCommand + '\n', index, typingAudio);
     };
