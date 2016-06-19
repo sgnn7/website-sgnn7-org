@@ -1,3 +1,5 @@
 # go away
 User-agent: *
 Disallow: /
+Allow: /sitemap.txt
+Allow: /index.htm
